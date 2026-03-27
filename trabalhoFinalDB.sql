@@ -1,4 +1,5 @@
--- Criação de Banco de dados / Tabelas (todas as tipos, restrições e chaves).	Emanuel
+-- Criação de Banco de dados / Tabelas (todas as tipos, restrições e chaves). --
+CREATE DATABASE clinica_odontologica
 
 CREATE TABLE paciente (
 	id SERIAL PRIMARY KEY,
@@ -58,7 +59,8 @@ CREATE TABLE consulta_procedimento (
 );
 
 
--- Inserção de valores e Update.	Liliane, Caroline
+-- Inserção de valores e Update. --
+
 -- Inserção de valores Pacientes
 INSERT INTO paciente (nome_completo, cpf, data_nascimento, telefone, email, endereco)
 VALUES
@@ -183,7 +185,8 @@ VALUES
 	(14, 10),
 	(15, 6);
 
--- Índices	Arthur
+-- Índices --
+
 Create INDEX idx_telefone_paciente on paciente(telefone);
 -- Explicação: Isso agiliza a busca do dentista por um cliente caso o profissional deseja entrar em contato com o cliente.
 
@@ -198,7 +201,7 @@ Create INDEX idx_procedimento on procedimento(descricao, duracao_media_min);
 --Explicação: Em caso de existir uma plataforma de uso do cliente, o mesmo pode ter acesso agilizado a uma lista que traga todas as informações sobre um determinado procedimento.
 
 
---Update Liliane e Carol
+-- Update --
 UPDATE consulta 
 SET status = 'realizada' 
 WHERE id = 2;
@@ -211,13 +214,15 @@ UPDATE dentista
 SET especialidade = 'Ortodontia' 
 WHERE cro = 'RJ61045';
 
---Delete Arthur
-Delete from consulta where status = 'cancelada'
+-- Delete --
+Delete from consulta where status = 'cancelada';
 
-Delete from dentista where nome = 'Gustavo Henrique Pires Salgado'
+Delete from dentista where nome = 'Gustavo Henrique Pires Salgado';
 
-Delete from procedimento where nome = 'Profilaxia Periodontal'
--- Consultas.	Mateus
+Delete from procedimento where nome = 'Profilaxia Periodontal';
+
+
+-- Consultas --
 
 -- Quantidade de consultas por especialidade
 SELECT d.especialidade, count(c.id) AS qtd_consulta

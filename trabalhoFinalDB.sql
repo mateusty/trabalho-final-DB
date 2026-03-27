@@ -1,5 +1,4 @@
 -- Criação de Banco de dados / Tabelas (todas as tipos, restrições e chaves).	Emanuel
-CREATE DATABASE dentista
 
 CREATE TABLE paciente (
 	id SERIAL PRIMARY KEY,
@@ -184,8 +183,40 @@ VALUES
 	(14, 10),
 	(15, 6);
 
--- Índices e Delete.	Arthur
+-- Índices	Arthur
+Create INDEX idx_telefone_paciente on paciente(telefone);
+-- Explicação: Isso agiliza a busca do dentista por um cliente caso o profissional deseja entrar em contato com o cliente.
 
+Create INDEX idx_especialidade_Dentista on dentista(especialidade);
+--Explicação: Em caso de existir uma plataforma de uso do cliente, o mesmo consegue acessar com maior agilidade uma lista que mostra as especialidades de cada dentista.
+
+Create INDEX idx_status_descricao on consulta(status, descricao_atendimento)
+where status = 'realizada';
+--Explicação: Dentista consegue ver de maneira mais acelerada a descrição do atendimento com verificação feita pelo status da consulta (realizada).
+
+Create INDEX idx_procedimento on procedimento(descricao, duracao_media_min);
+--Explicação: Em caso de existir uma plataforma de uso do cliente, o mesmo pode ter acesso agilizado a uma lista que traga todas as informações sobre um determinado procedimento.
+
+
+--Update Liliane e Carol
+UPDATE consulta 
+SET status = 'realizada' 
+WHERE id = 2;
+
+UPDATE paciente 
+SET telefone = '21987665433' 
+WHERE nome_completo = 'Bianca Moura Castro';
+
+UPDATE dentista 
+SET especialidade = 'Ortodontia' 
+WHERE cro = 'RJ61045';
+
+--Delete Arthur
+Delete from consulta where status = 'cancelada'
+
+Delete from dentista where nome = 'Gustavo Henrique Pires Salgado'
+
+Delete from procedimento where nome = 'Profilaxia Periodontal'
 -- Consultas.	Mateus
 
 -- Quantidade de consultas por especialidade
@@ -233,8 +264,50 @@ SELECT c.id AS id_consulta,
 SELECT * FROM vw_consultas_ordenadas
 
 -- Média de consultas por dentista
-SELECT 1.0*count(*) / count(DISTINCT id_dentista) AS media_consultas 
-	FROM consulta
-	WHERE status = 'realizada';
+SELECT 1.0*avg(qtd_consulta) as media_consulta
+    FROM (SELECT c.id_dentista, count(c.id) AS qtd_consulta
+    FROM consulta c
+    GROUP BY c.id_dentista);
+
+-- Relaciona o dentista, sua especialidade e o procedimento das consultas agendadas, ordenadas
+-- pela data da consulta em ordem decrescente
+SELECT 
+	d.nome_completo AS dentista,
+	d.especialidade AS "Especialidade do Dentista",
+	p.nome AS procedimento,
+	c.data_consulta AS "Data da Consulta"
+FROM 
+	consulta c
+JOIN 
+	dentista d ON c.id_dentista = d.id
+JOIN
+	consulta_procedimento cp ON cp.id_consulta = c.id
+JOIN
+	procedimento p ON cp.id_procedimento = p.id
+WHERE
+	status = 'agendada'
+ORDER BY
+	c.data_consulta DESC;
+
+-- Selecionar pacientes com recomendação de retorno na prescricao
+SELECT
+	pac.nome_completo AS paciente,
+	d.nome_completo AS dentista,
+	pro.nome AS procedimento,
+	c.data_consulta AS "Data da última consulta"
+FROM
+	consulta c
+JOIN 
+	dentista d ON c.id_dentista = d.id
+JOIN
+	consulta_procedimento cp ON cp.id_consulta = c.id
+JOIN
+	procedimento pro ON cp.id_procedimento = pro.id
+JOIN 
+	paciente pac ON c.id_paciente = pac.id
+WHERE 
+	prescricao LIKE '%Retorno%'
+ORDER BY
+	c.data_consulta;
 
 -- Modelos Conceitual (Lógico e Físico).	Letícia

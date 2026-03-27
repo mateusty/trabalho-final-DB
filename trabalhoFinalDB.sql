@@ -1,5 +1,6 @@
 -- Criação de Banco de dados / Tabelas (todas as tipos, restrições e chaves).	Emanuel
--- CREATE DATABASE \ adicionar um nome \
+CREATE DATABASE dentista
+
 CREATE TABLE paciente (
 	id SERIAL PRIMARY KEY,
 	nome_completo VARCHAR(100) NOT NULL,
@@ -116,8 +117,8 @@ VALUES
 	('Felipe Augusto Moraes Vasconcelos', '70835921460', 'RJ77125', 'Cirurgia Bucomaxilofacial', 'felipe.vasconcelos@oralmax.com');
 
 -- Inserção de valores horário atendimento
- INSERT INTO horario_atendimento (id_dentista, dia_semana, hora_inicio, hora_fim)
- VALUES 
+INSERT INTO horario_atendimento (id_dentista, dia_semana, hora_inicio, hora_fim)
+VALUES 
     (1, 'Segunda', '08:00:00', '08:40:05'),
     (2, 'Quinta',  '14:15:20', '15:10:22'),
     (4, 'Terça',   '09:30:13', '10:05:36'),
@@ -143,8 +144,97 @@ VALUES
 	('Ajuste de Aparelho', 'Manutenção e ajuste do aparelho', 35),
 	('Prótese Dentária Parcial', 'Substituição de dentes ausentes', 80);
 
+-- Inserção de valores consulta
+INSERT INTO consulta (id_paciente, id_dentista, data_consulta, status, descricao_atendimento, prescricao)
+VALUES
+	(1, 1, '2026-02-03 08:00:00', 'realizada', 'Limpeza de rotina sem intercorrências', 'Manter higiene bucal diária'),
+	(2, 2, '2026-02-04 14:20:00', 'cancelada', 'Consulta de avaliação geral', NULL),
+	(3, 3, '2026-02-05 11:10:00', 'realizada', 'Paciente com dor intensa, indicado canal', 'Analgésico por 3 dias'),
+	(4, 4, '2026-02-06 09:40:00', 'realizada', 'Extração de dente comprometido', 'Repouso e evitar esforço'),
+	(5, 5, '2026-02-07 16:00:00', 'agendada', 'Consulta para clareamento dental', NULL),
+	(6, 6, '2026-02-08 09:05:00', 'realizada', 'Tratamento periodontal preventivo', 'Uso de enxaguante bucal'),
+	(7, 7, '2026-02-09 15:20:00', 'realizada', 'Aplicação de flúor', 'Evitar alimentos por 30 minutos'),
+	(8, 8, '2026-02-10 12:00:00', 'agendada', 'Avaliação ortodôntica', NULL),
+	(9, 9, '2026-02-11 15:00:00', 'realizada', 'Restauração em dente posterior', 'Evitar alimentos duros'),
+	(10, 10, '2026-02-12 08:30:00', 'realizada', 'Cirurgia simples realizada com sucesso', 'Antibiótico por 5 dias'),
+	(11, 1, '2026-02-13 08:30:00', 'realizada', 'Limpeza e profilaxia', 'Uso de fio dental'),
+	(12, 2, '2026-02-14 14:40:00', 'agendada', 'Ajuste de aparelho ortodôntico', NULL),
+	(13, 3, '2026-02-15 11:20:00', 'realizada', 'Canal finalizado', 'Retorno em 6 meses'),
+	(14, 4, '2026-02-16 09:50:00', 'cancelada', 'Avaliação para implante', NULL),
+	(15, 5, '2026-02-17 16:10:00', 'realizada', 'Atendimento odontopediátrico preventivo', 'Escovação supervisionada');
+
+
+
+-- Inserção de valores consulta_procedimento
+INSERT INTO consulta_procedimento (id_consulta, id_procedimento)
+VALUES
+	(1, 1),
+	(3, 3),
+	(4, 4),
+	(5, 5),
+	(6, 7),
+	(7, 6),
+	(8, 8),
+	(9, 2),
+	(10, 4),
+	(10, 3),
+	(11, 1),
+	(12, 9),
+	(13, 3),
+	(14, 10),
+	(15, 6);
+
 -- Índices e Delete.	Arthur
 
 -- Consultas.	Mateus
+
+-- Quantidade de consultas por especialidade
+SELECT d.especialidade, count(c.id) AS qtd_consulta
+	FROM dentista d
+	JOIN consulta c
+	ON c.id_dentista = d.id
+	GROUP BY d.especialidade;
+
+-- Quantidade de consultas por dentista (ordem decrescente)
+SELECT d.nome_completo, count(c.id) AS qtd_consulta
+	FROM dentista d
+	JOIN consulta c
+	ON c.id_dentista = d.id
+	GROUP BY d.nome_completo
+	ORDER BY qtd_consulta DESC;
+
+-- Pacientes com maior número de consultas
+SELECT p.nome_completo, count(c.id) AS qtd_consulta
+	FROM paciente p
+	JOIN consulta c
+	ON c.id_paciente = p.id
+	GROUP BY p.nome_completo
+	ORDER BY qtd_consulta DESC;
+
+-- VIEW — Lista de consultas ordenadas por data
+CREATE VIEW vw_consultas_ordenadas AS
+SELECT c.id AS id_consulta, 
+		pa.nome_completo AS nome_paciente, 
+		d.nome_completo AS nome_dentista, 
+		c.data_consulta, 
+		c.status, 
+		pr.nome AS procedimentos_realizados
+	FROM consulta c
+	JOIN paciente pa
+		ON c.id_paciente = pa.id
+	JOIN dentista d
+		ON c.id_dentista = d.id
+	JOIN consulta_procedimento cp
+		ON cp.id_consulta = c.id
+	JOIN procedimento pr
+		ON cp.id_procedimento = pr.id
+	ORDER BY c.data_consulta DESC;
+
+SELECT * FROM vw_consultas_ordenadas
+
+-- Média de consultas por dentista
+SELECT 1.0*count(*) / count(DISTINCT id_dentista) AS media_consultas 
+	FROM consulta
+	WHERE status = 'realizada';
 
 -- Modelos Conceitual (Lógico e Físico).	Letícia

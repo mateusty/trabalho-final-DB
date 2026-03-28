@@ -315,4 +315,16 @@ WHERE
 ORDER BY
 	c.data_consulta;
 
--- Modelos Conceitual (Lógico e Físico).	Letícia
+-- Selecionar a porcentagem de consultas que cada dentista fez do total
+SELECT
+	d.nome_completo,
+	count(c.id) AS QTD_parcial,
+	CONCAT(CAST(COUNT(c.id) * 100.0 / SUM(COUNT(c.id)) OVER() AS DECIMAL(10, 2)), '%') AS media
+	FROM 
+		dentista d
+		JOIN consulta c
+			ON c.id_dentista = d.id
+	GROUP BY d.nome_completo
+-- OVER() Cria uma coluna no final da tabela com o valor próprio, podendo ser usada com COUNT() para evitar o GROUP BY
+-- CONCAT() junta valores em uma string
+-- CAST() muda o tipo do dado dentro dele

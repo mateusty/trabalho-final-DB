@@ -325,6 +325,6 @@ SELECT
 		JOIN consulta c
 			ON c.id_dentista = d.id
 	GROUP BY d.nome_completo
--- OVER() Cria uma coluna no final da tabela com o valor próprio, podendo ser usada com COUNT() para evitar o GROUP BY
+-- OVER() Permite a realização de cálculos com a linha atual juntamente à todas as outras linhas, juntando-as como um GROUP BY
 -- CONCAT() junta valores em uma string
 -- CAST() muda o tipo do dado dentro dele

@@ -204,7 +204,7 @@ Create INDEX idx_procedimento on procedimento(descricao, duracao_media_min);
 -- Update --
 UPDATE consulta 
 SET status = 'realizada' 
-WHERE id = 2;
+WHERE id = 5;
 
 UPDATE paciente 
 SET telefone = '21987665433' 
@@ -217,8 +217,9 @@ WHERE cro = 'RJ61045';
 -- Delete --
 Delete from consulta where status = 'cancelada';
 
-Delete from dentista where nome = 'Gustavo Henrique Pires Salgado';
 
+-- Não é possível deletar dentista nem procedimento devido às restrições de FK's
+Delete from dentista where nome_completo = 'Gustavo Henrique Pires Salgado';
 Delete from procedimento where nome = 'Profilaxia Periodontal';
 
 
@@ -311,7 +312,7 @@ JOIN
 JOIN 
 	paciente pac ON c.id_paciente = pac.id
 WHERE 
-	prescricao LIKE '%Retorno%'
+	prescricao ILIKE '%Retorno%'
 ORDER BY
 	c.data_consulta;
 
@@ -319,12 +320,12 @@ ORDER BY
 SELECT
 	d.nome_completo,
 	count(c.id) AS QTD_parcial,
-	CONCAT(CAST(COUNT(c.id) * 100.0 / SUM(COUNT(c.id)) OVER() AS DECIMAL(10, 2)), '%') AS media
+	CONCAT(CAST(COUNT(c.id) * 100.0 / SUM(COUNT(c.id)) OVER() AS DECIMAL(10, 2)), '%') AS porcentagem
 	FROM 
 		dentista d
 		JOIN consulta c
 			ON c.id_dentista = d.id
-	GROUP BY d.nome_completo
+	GROUP BY d.nome_completo;
 -- OVER() Permite a realização de cálculos com a linha atual juntamente à todas as outras linhas, juntando-as como um GROUP BY
 -- CONCAT() junta valores em uma string
 -- CAST() muda o tipo do dado dentro dele

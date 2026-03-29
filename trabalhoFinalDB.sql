@@ -120,16 +120,18 @@ VALUES
 -- Inserção de valores horário atendimento
 INSERT INTO horario_atendimento (id_dentista, dia_semana, hora_inicio, hora_fim)
 VALUES 
-    (1, 'Segunda', '08:00:00', '08:40:05'),
-    (2, 'Quinta',  '14:15:20', '15:10:22'),
-    (4, 'Terça',   '09:30:13', '10:05:36'),
-    (5, 'Quarta',  '16:15:20', '17:20:25'),
-    (3, 'Sexta',   '11:00:25', '11:40:54'),
-    (7, 'Terça',   '15:15:27', '16:00:36'),
-    (8, 'Segunda', '11:50:40', '12:30:00'),
-    (6, 'Quarta',  '09:00:25', '09:45:03'),
-    (9, 'Sexta',   '14:50:03', '15:35:27'),
-    (10,'Quinta',  '08:00:04', '09:20:52');
+    (1, 'Segunda', '08:00:00', '17:00:00'),
+    (2, 'Quinta',  '13:00:00', '17:00:00'),
+    (4, 'Terça',   '08:00:00', '17:00:00'),
+    (5, 'Quarta',  '13:00:00', '18:00:00'),
+    (3, 'Sexta',   '08:00:00', '12:00:00'),
+    (7, 'Terça',   '13:00:00', '17:00:00'),
+	(7, 'Quinta', '09:00:00', '13:00:00'),
+    (8, 'Segunda', '08:00:00', '17:00:00'),
+    (6, 'Quarta',  '08:00:00', '12:00:00'),
+    (9, 'Sexta',   '13:00:00', '17:00:00'),
+    (10,'Quinta',  '08:00:00', '17:00:00'),
+	(6, 'Terça', '08:00:00', '12:00:00');
 
 -- Inserção valores procedimentos
 INSERT INTO procedimento (nome, descricao, duracao_media_min)

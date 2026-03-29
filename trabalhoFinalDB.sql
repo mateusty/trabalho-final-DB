@@ -1,5 +1,5 @@
 -- Criação de Banco de dados / Tabelas (todas as tipos, restrições e chaves). --
-CREATE DATABASE clinica_odontologica
+CREATE DATABASE clinica_odontologica;
 
 CREATE TABLE paciente (
 	id SERIAL PRIMARY KEY,
@@ -93,6 +93,7 @@ VALUES
 	('Leonardo Batista Cordeiro', '90271846350', '1986-05-09', '21996732048', 'leonardo.cordeiro@email.com', 'Rua José Pacheco, 49'),
 	
 	('Tatiane Nogueira Barros', '65830491277', '1992-10-03', '21989351762', 'tatiane.barros@gmail.com', 'Rua Bela Vista, 310');
+
 	
 -- Inserção de valores dentista 
 INSERT INTO dentista (nome_completo, cpf, cro, especialidade, email)
@@ -133,6 +134,7 @@ VALUES
     (10,'Quinta',  '08:00:00', '17:00:00'),
 	(6, 'Terça', '08:00:00', '12:00:00');
 
+
 -- Inserção valores procedimentos
 INSERT INTO procedimento (nome, descricao, duracao_media_min)
 VALUES
@@ -154,18 +156,18 @@ VALUES
 	(2, 2, '2026-02-04 14:20:00', 'cancelada', 'Consulta de avaliação geral', NULL),
 	(3, 3, '2026-02-05 11:10:00', 'realizada', 'Paciente com dor intensa, indicado canal', 'Analgésico por 3 dias'),
 	(4, 4, '2026-02-06 09:40:00', 'realizada', 'Extração de dente comprometido', 'Repouso e evitar esforço'),
-	(5, 5, '2026-02-07 16:00:00', 'agendada', 'Consulta para clareamento dental', NULL),
+	(5, 5, '2026-05-07 16:00:00', 'agendada', 'Consulta para clareamento dental', NULL),
 	(6, 6, '2026-02-08 09:05:00', 'realizada', 'Tratamento periodontal preventivo', 'Uso de enxaguante bucal'),
 	(7, 7, '2026-02-09 15:20:00', 'realizada', 'Aplicação de flúor', 'Evitar alimentos por 30 minutos'),
-	(8, 8, '2026-02-10 12:00:00', 'agendada', 'Avaliação ortodôntica', NULL),
+	(8, 8, '2026-04-10 12:00:00', 'agendada', 'Avaliação ortodôntica', NULL),
 	(9, 9, '2026-02-11 15:00:00', 'realizada', 'Restauração em dente posterior', 'Evitar alimentos duros'),
 	(10, 10, '2026-02-12 08:30:00', 'realizada', 'Cirurgia simples realizada com sucesso', 'Antibiótico por 5 dias'),
 	(11, 1, '2026-02-13 08:30:00', 'realizada', 'Limpeza e profilaxia', 'Uso de fio dental'),
-	(12, 2, '2026-02-14 14:40:00', 'agendada', 'Ajuste de aparelho ortodôntico', NULL),
+	(12, 2, '2026-06-14 14:40:00', 'agendada', 'Ajuste de aparelho ortodôntico', NULL),
 	(13, 3, '2026-02-15 11:20:00', 'realizada', 'Canal finalizado', 'Retorno em 6 meses'),
 	(14, 4, '2026-02-16 09:50:00', 'cancelada', 'Avaliação para implante', NULL),
-	(15, 5, '2026-02-17 16:10:00', 'realizada', 'Atendimento odontopediátrico preventivo', 'Escovação supervisionada');
-
+	(15, 5, '2026-02-17 16:10:00', 'realizada', 'Atendimento odontopediátrico preventivo', 'Escovação supervisionada'),
+	(13, 3, '2026-08-15 11:20:00', 'agendada', 'Check-up', NULL);
 
 
 -- Inserção de valores consulta_procedimento
@@ -216,13 +218,17 @@ UPDATE dentista
 SET especialidade = 'Ortodontia' 
 WHERE cro = 'RJ61045';
 
+UPDATE consulta
+SET status = 'cancelada'
+WHERE data_consulta < CURRENT_DATE AND status = 'agendada';
+
 -- Delete --
 Delete from consulta where status = 'cancelada';
 
 
--- Não é possível deletar dentista nem procedimento devido às restrições de FK's
+-- Deletando consulta onde id do dentista é o mesmo do Gustavo Henrique, para podê-lo deletar depois.
+DELETE FROM consulta WHERE id_dentista = 6;
 Delete from dentista where nome_completo = 'Gustavo Henrique Pires Salgado';
-Delete from procedimento where nome = 'Profilaxia Periodontal';
 
 
 -- Consultas --
@@ -275,6 +281,7 @@ SELECT * FROM vw_consultas_ordenadas
 SELECT 1.0*avg(qtd_consulta) as media_consulta
     FROM (SELECT c.id_dentista, count(c.id) AS qtd_consulta
     FROM consulta c
+    WHERE status = 'realizada'
     GROUP BY c.id_dentista);
 
 -- Relaciona o dentista, sua especialidade e o procedimento das consultas agendadas, ordenadas
